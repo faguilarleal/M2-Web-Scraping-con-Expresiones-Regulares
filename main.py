@@ -30,7 +30,7 @@ def extraer_productos(archivo_html, url_base):
         imagen = imagen.replace(caracteres, "")
         #cambiar la url de la imagen para que apunte a la url base
         imagen = urljoin(url_base, imagen)
-        print(imagen)
+        # print(imagen)
         productos.append([nombre, imagen])
 
     return productos
@@ -41,7 +41,8 @@ def exportar_csv(productos, archivo_salida):
     with open(archivo_salida, 'w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         writer.writerow(['Nombre del producto', 'Url de la imagen'])
-        writer.writerow(productos)
+        for producto in productos:
+            writer.writerow(producto)
 
 #cargar el archivo
 nombre_archivo= 'Trufas & Bombones _ Zurich Guatemala.html'
