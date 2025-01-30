@@ -4,7 +4,7 @@
 #          - Angela Garcia #22869
 
 import re
-import csv   
+import csv
 import html
 from urllib.parse import urljoin
 #acciones que debe de hacer el programa
@@ -18,33 +18,37 @@ def cargar_html(nombre_archivo):
 
 #usar expresiones regulares para encontrar los nombres de productos y urls de imagenes
 def extraer_productos(archivo_html, url_base):
-    regex_nombre = r"<h2 class='woocommerce-loop-product__title'\s*>(.*?)</h2>"
-    # regex_imagen = r'<img src="(.*?)" alt=".*?" />'
-    regex_imagen = r'<img.*?src="(.*?)"(?: alt=".*?")?.*?>'
-    nombres = re.findall(regex_nombre, archivo_html)
-    imagenes = re.findall(regex_imagen, archivo_html)
+    productos = []
+    #re.dotall sirve para que el . en la re coincida con cualquier caracter y el finter sirve para devolver un iterador de las conincidencias
+    for match in re.finditer(r'<li class="product.*?<a.*?<img.*?src="(.*?)"(?: alt=".*?")?.*?>.*?<h2 class="woocommerce-loop-product__title"\s*>(.*?)</h2>', archivo_html, re.DOTALL):
+        imagen = match.group(1)
+        nombre = match.group(2).strip()
+        # print(nombre)
+        # print(imagen)
+        #caracteres de la ruta de imagen
+        caracteres = './Trufas &amp; Bombones _ Zurich Guatemala_files/'
+        imagen = imagen.replace(caracteres, "")
+        #cambiar la url de la imagen para que apunte a la url base
+        imagen = urljoin(url_base, imagen)
+        print(imagen)
+        productos.append([nombre, imagen])
 
+    return productos
 
-
-
-
-    return list(zip(nombres, imagenes))
-
-#generar un archivo exportable, como un .csv con las columnas de "nombre del producto" y "url de la imagen"
-#exportar los resultados
+# generar un archivo exportable, como un .csv con las columnas de "nombre del producto" y "url de la imagen"
+# exportar los resultados
 def exportar_csv(productos, archivo_salida):
     with open(archivo_salida, 'w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         writer.writerow(['Nombre del producto', 'Url de la imagen'])
-        writer.writerows(productos)
-
+        writer.writerow(productos)
 
 #cargar el archivo
 nombre_archivo= 'Trufas & Bombones _ Zurich Guatemala.html'
 archivo_html = cargar_html(nombre_archivo)
 
 #extraer los productos y las urls de imagenes
-url_base = "https://zurich.com/" #esto nos va a servir, por la img que tiene la imagen
+url_base = "https://zurichgt.com/wp-content/uploads/2024/04/" #alli es donde estan las imagenes en la web
 productos = extraer_productos(archivo_html, url_base)
 
 
