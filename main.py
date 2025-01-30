@@ -5,9 +5,8 @@
 
 import re
 import csv
-import html
 from urllib.parse import urljoin
-#acciones que debe de hacer el programa
+
 
 #abrir un archivo html de la pagina descargada
 def cargar_html(nombre_archivo):
